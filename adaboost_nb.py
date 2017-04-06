@@ -2,9 +2,9 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
 from sklearn.ensemble import AdaBoostClassifier
 import SDK as sdk
-import os
+import personal_settings
 
-path = "/home/nandane/Documents/Cours_ETS_MTL/LOG770_Intelligence_machine/LAB4/DEV_PREPARED/"
+path = personal_settings.PATH
 algorithm = "adaboost_decision_tree"
 
 extraction_type = "MSD-SSD"
@@ -15,7 +15,8 @@ try :
     # Create and fit an AdaBoosted decision tree
     bdt = AdaBoostClassifier(tree.DecisionTreeClassifier(), algorithm="SAMME", n_estimators=500)
     sdk.evaluate_classifier(bdt, folder, extraction_type, algorithm)
-except FileNotFoundError:
-    print("File of extraction type : " + extraction_type + " not found !")
+except Exception as e:
+    print(str(e))
+    pass
 
 print("Ended extraction : " + extraction_type)
