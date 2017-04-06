@@ -1,8 +1,9 @@
 from sklearn import neighbors
 import SDK as sdk
 import os
+import personal_settings
 
-path = "/home/nandane/Documents/Cours_ETS_MTL/LOG770_Intelligence_machine/LAB4/DEV_PREPARED/"
+path = personal_settings.PATH
 algorithm = "knn"
 
 
@@ -13,12 +14,13 @@ for extraction_type in os.listdir(path):
 
     folder = path + extraction_type + "/"
 
-    try :
+    try:
         clf = neighbors.KNeighborsClassifier()
         sdk.evaluate_classifier(clf, folder, extraction_type, algorithm)
 
-    except FileNotFoundError:
-        print("File of extraction type : " + extraction_type + " not found !")
+    except Exception as e:
+        print(str(e))
+        pass
 
     print("Ended extraction : " + extraction_type)
 

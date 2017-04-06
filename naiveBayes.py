@@ -1,8 +1,9 @@
 from sklearn.naive_bayes import GaussianNB
+import personal_settings
 import SDK as sdk
 import os
 
-path = "/home/nandane/Documents/Cours_ETS_MTL/LOG770_Intelligence_machine/LAB4/DEV_PREPARED/"
+path = personal_settings.PATH
 algorithm = "naive_bayes"
 
 # execute for all datasets:
@@ -11,10 +12,11 @@ for extraction_type in os.listdir(path):
     print("Starting new classification. Extraction method : " + extraction_type)
     folder = path + extraction_type + "/"
 
-    try :
+    try:
         clf = GaussianNB()
         sdk.evaluate_classifier(clf, folder, extraction_type, algorithm)
-    except FileNotFoundError:
-        print("File of extraction type : " + extraction_type + " not found !")
+    except Exception as e:
+        print(str(e))
+        pass
 
     print("Ended extraction : " + extraction_type)

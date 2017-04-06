@@ -1,3 +1,4 @@
 output*
 __pycache__
 .idea
+personal_settings.py
