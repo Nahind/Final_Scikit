@@ -18,16 +18,21 @@ def neural_on_all_datasets():
         try:
             training, validation = sdk.load_data_from_folder(folder, extraction_type)
             # Normalize training & validation sets
+            print("Start normalizing data")
             scaler.fit(training.data)
             training.data = scaler.transform(training.data)
+            print("Training data has been normalized")
             validation.data = scaler.transform(validation.data)
+            print("Validation data has been normalized")
             # Build MLP model
+            print("Start training MLP Classifier")
             clf = MLPClassifier()
             model = clf.fit(training.data, training.target)
             print("Training has ended")
             # Save MLP model
             sdk.save_model(model, extraction_type, algorithm)
             # Evaluation model
+            print("Start predicting validation set")
             y_pred = model.predict(validation.data)
             # Save Evaluation report
             sdk.save_classification_report(validation, extraction_type, y_pred, algorithm)
