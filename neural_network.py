@@ -5,7 +5,7 @@ import os
 import personal_settings
 
 path = personal_settings.PATH
-algorithm = "knn"
+algorithm = "neural network"
 
 
 #execute for all datasets:
@@ -16,7 +16,7 @@ def neural_on_all_datasets():
         folder = path + extraction_type + "/"
 
         try:
-            training, validation = sdk.load_data_from_folder(folder, extraction_type)
+            training, validation = sdk.load_dataset_from_folder(folder, extraction_type)
             # Normalize training & validation sets
             print("Start normalizing data")
             scaler.fit(training.data)
