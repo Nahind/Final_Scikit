@@ -14,8 +14,11 @@ class Data:
 def save_model(model, extraction_type, algorithm):
     dir = "./output_" + algorithm + "/models/"
     if not os.path.exists(dir):
+        print("Creating new directory : " + dir)
         os.makedirs(dir)
+    print("Start model saving")
     joblib.dump(model, dir + extraction_type.lower() +'.pkl')
+    print("Model has been saved")
 
 
 def save_model(model, extraction_type, algorithm):
@@ -71,6 +74,7 @@ def load_data_from_folder(path, extraction_type):
 def evaluate_classifier(clf, folder, extraction_type, algorithm, **kwargs):
     training, validation = load_data_from_folder(folder, extraction_type)
     model = clf.fit(training.data, training.target)
+    print("Training has ended")
     save_model(model, extraction_type, algorithm)
     y_pred = model.predict(validation.data)
     save_classification_report(validation, extraction_type, y_pred, algorithm, **kwargs)
