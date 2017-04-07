@@ -3,3 +3,8 @@ __pycache__
 .idea
 *.pyc
 personal_settings.py
+bin
+include
+lib
+lib64
+local

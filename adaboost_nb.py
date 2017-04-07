@@ -7,7 +7,7 @@ import personal_settings
 path = personal_settings.PATH
 algorithm = "adaboost_decision_tree"
 
-extraction_type = "MSD-SSD"
+extraction_type = "MSD-JMIRMFCCS"
 print("Starting new classification. Extraction method : " + extraction_type)
 folder = path + extraction_type + "/"
 
