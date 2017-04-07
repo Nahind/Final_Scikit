@@ -8,6 +8,7 @@ path = personal_settings.PATH
 algorithm = "neural network"
 
 
+
 #execute for all datasets:
 def neural_on_all_datasets():
     scaler = StandardScaler()
