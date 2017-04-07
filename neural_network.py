@@ -5,7 +5,7 @@ import os
 import personal_settings
 
 path = personal_settings.PATH
-algorithm = "knn"
+algorithm = "neural_network"
 
 
 #execute for all datasets:
