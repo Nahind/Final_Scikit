@@ -4,7 +4,8 @@ import os
 import personal_settings
 
 path = personal_settings.PATH
-algorithm = "knn"
+algorithm = os.path.basename(__file__).split(".py")[0]
+
 
 
 #execute for all datasets:

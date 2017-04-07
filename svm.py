@@ -1,10 +1,12 @@
-from sklearn.svm import SVC
 import personal_settings
-from sklearn import metrics
+import os
 import SDK as sdk
 
+from sklearn.svm import SVC
+from sklearn import metrics
+
 path = personal_settings.PATH
-algorithm = "svm"
+algorithm = os.path.basename(__file__).split(".py")[0]
 
 training, validation, extraction_type = sdk.get_test_dataset(path)
 clf = SVC()

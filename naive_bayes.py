@@ -4,7 +4,7 @@ import SDK as sdk
 import os
 
 path = personal_settings.PATH
-algorithm = "naive_bayes"
+algorithm = os.path.basename(__file__).split(".py")[0]
 
 # execute for all datasets:
 for extraction_type in os.listdir(path):

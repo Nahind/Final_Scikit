@@ -4,7 +4,7 @@ import os
 import personal_settings
 
 path = personal_settings.PATH
-algorithm = "decision_tree"
+algorithm = os.path.basename(__file__).split(".py")[0]
 
 
 # execute for all datasets:
