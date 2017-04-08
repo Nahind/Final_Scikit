@@ -12,16 +12,17 @@ algorithm = os.path.basename(__file__).split(".py")[0]
 for extraction_type in os.listdir(path):
     print("Starting new classification. Extraction method : " + extraction_type)
     folder = path + extraction_type + "/"
-    for n in range(12, 21):
+    for n in range(10, 31):
         print("Starting new classification. Extraction method : " + extraction_type)
         print("NN = " + str(n))
-    try:
-        clf = neighbors.KNeighborsClassifier(n_neighbors=n)
-        sdk.evaluate_classifier(clf, folder, extraction_type, algorithm, suffixe=str(n) + "NN")
 
-    except Exception as e:
-        print(str(e))
-        pass
+        try:
+            clf = neighbors.KNeighborsClassifier(n_neighbors = n, n_jobs = -1)
+            sdk.evaluate_classifier(clf, folder, extraction_type, algorithm, suffixe=str(n) + "NN")
+
+        except Exception as e:
+            print(str(e))
+            pass
     print("Ended extraction : " + extraction_type)
 
 
