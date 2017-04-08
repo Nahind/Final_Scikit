@@ -6,12 +6,14 @@ import personal_settings
 
 path = personal_settings.PATH
 algorithm = os.path.basename(__file__).split(".py")[0]
+datasets = personal_settings.LARGE_DATASETS
 
 
 #execute for all datasets:
 def neural_on_all_datasets():
     scaler = StandardScaler()
-    for extraction_type in os.listdir(path):
+    # for extraction_type in os.listdir(path):
+    for extraction_type in datasets:
         print("Starting new classification. Extraction method : " + extraction_type)
         folder = path + extraction_type + "/"
 
@@ -26,7 +28,7 @@ def neural_on_all_datasets():
             print("Validation data has been normalized")
             # Build MLP model
             print("Start training MLP Classifier")
-            clf = MLPClassifier()
+            clf = MLPClassifier(verbose=True, hidden_layer_sizes=300)
             model = clf.fit(training.data, training.target)
             print("Training has ended")
             # Save MLP model
@@ -35,7 +37,7 @@ def neural_on_all_datasets():
             print("Start predicting validation set")
             y_pred = model.predict(validation.data)
             # Save Evaluation report
-            sdk.save_classification_report(validation, extraction_type, y_pred, algorithm)
+            sdk.save_classification_report(validation, extraction_type, y_pred, algorithm, suffixe="_no_early_stop")
 
         except Exception as e:
             print(str(e))
