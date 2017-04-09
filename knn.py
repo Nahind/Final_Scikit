@@ -12,7 +12,7 @@ algorithm = os.path.basename(__file__).split(".py")[0]
 for extraction_type in os.listdir(path):
     print("Starting new classification. Extraction method : " + extraction_type)
     folder = path + extraction_type + "/"
-    for n in range(10, 31):
+    for n in range(17, 18):
         print("Starting new classification. Extraction method : " + extraction_type)
         print("NN = " + str(n))
 
