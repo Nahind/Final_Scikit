@@ -20,12 +20,12 @@ for extraction_type in personal_settings.LARGE_DATASETS:
     folder = path + extraction_type + "/"
     training, valid = sdk.load_dataset_from_folder(folder, extraction_type)
 
-    X = valid.data
-    y = valid.target
+    X = training.data
+    y = training.target
 
     # Split the dataset in two equal parts
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.5, random_state=5)
+        X, y, test_size=0.5, random_state=20)
 
     tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4],
                          'C': [1, 10, 100, 1000]}]
@@ -59,6 +59,7 @@ for extraction_type in personal_settings.LARGE_DATASETS:
 
             for mean, std, params in zip(means, stds, clf.cv_results_['params']):
                 print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
+                file.write("%0.3f (+/-%0.03f) for %r \n" % (mean, std * 2, params))
 
             print()
             print("Detailed classification report:")
