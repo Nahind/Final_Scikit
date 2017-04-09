@@ -5,8 +5,8 @@ import SDK as sdk
 
 path = personal_settings.PATH
 algorithm = os.path.basename(__file__).split(".py")[0]
-datasets = ["MSD-SSD"]
-# datasets = os.listdir(path)
+# datasets = ["MSD-SSD"]
+datasets = os.listdir(path)
 
 for extraction_type in datasets:
     print("Starting new classification. Extraction method : " + extraction_type)

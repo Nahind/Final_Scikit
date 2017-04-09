@@ -19,9 +19,9 @@ def get_or_create_output_file(extraction_type, algorithm, **kwargs):
         print("directory created : " + directory)
         os.makedirs(directory)
     if 'suffixe' in kwargs:
-        file = open(directory + extraction_type.lower() + kwargs['suffixe'] + ".txt", "a")
+        file = open(directory + extraction_type.lower() + kwargs['suffixe'] + ".txt", "w")
     else:
-        file = open(directory + extraction_type.lower() + ".txt", "a")
+        file = open(directory + extraction_type.lower() + ".txt", "w")
     return file
 
 
