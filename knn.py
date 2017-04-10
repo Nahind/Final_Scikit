@@ -5,20 +5,20 @@ import personal_settings
 
 path = personal_settings.PATH
 algorithm = os.path.basename(__file__).split(".py")[0]
-
-
+datasets = os.listdir(path)
+datasets = ["MSD-SSD"]
 
 #execute for all datasets:
-for extraction_type in os.listdir(path):
+for extraction_type in datasets:
     print("Starting new classification. Extraction method : " + extraction_type)
     folder = path + extraction_type + "/"
-    for n in range(17, 18):
+    for n in range(15,16):
         print("Starting new classification. Extraction method : " + extraction_type)
         print("NN = " + str(n))
 
         try:
             clf = neighbors.KNeighborsClassifier(n_neighbors = n, n_jobs = -1)
-            sdk.evaluate_classifier(clf, folder, extraction_type, algorithm, suffixe=str(n) + "NN")
+            sdk.evaluate_classifier(clf, folder, extraction_type, algorithm, suffixe="_"+str(n)+"NN")
 
         except Exception as e:
             print(str(e))
