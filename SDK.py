@@ -5,6 +5,8 @@ import numpy as np
 import os
 
 
+# class representing a labeled data set
+# data being the values & target the labels
 class Data:
     def __init__(self, data, meta):
         d = data[meta.names()[:-1]]
@@ -54,7 +56,6 @@ def load_model(extraction_type, algorithm, directory=None):
 
 
 def load_dataset_from_folder(path, extraction_type):
-    print("Start loading data")
     prefix = extraction_type.lower()
     training_file = path + prefix + "_dev_train.arff"
     evaluation_file = path + prefix + "_dev_val.arff"
@@ -86,3 +87,40 @@ def get_test_dataset(path):
     folder = path + extraction_type + "/"
     training, validation = load_dataset_from_folder(folder, extraction_type)
     return training, validation, extraction_type
+
+
+def balanced_subsample(x,y,subsample_size=1.0):
+
+    class_xs = []
+    min_elems = None
+
+    for yi in np.unique(y):
+        elems = x[(y == yi)]
+        class_xs.append((yi, elems))
+        if min_elems == None or elems.shape[0] < min_elems:
+            min_elems = elems.shape[0]
+
+    use_elems = min_elems
+
+    if subsample_size < 1:
+        use_elems = int(min_elems*subsample_size)
+
+    xs = []
+    ys = []
+
+    for ci, this_xs in class_xs:
+        if len(this_xs) > use_elems:
+            np.random.shuffle(this_xs)
+
+        x_ = this_xs[:use_elems]
+        # y_ = np.empty(use_elems)
+        # y_.fill(ci)
+        y_ = np.array([ci] * use_elems)
+
+        xs.append(x_)
+        ys.append(y_)
+
+    xs = np.concatenate(xs)
+    ys = np.concatenate(ys)
+
+    return xs,ys
