@@ -30,7 +30,7 @@ def neural_on_all_datasets():
             xs, ys = sdk.balanced_subsample(training.data, training.target)
             # Build MLP model
             print("Start training MLP Classifier")
-            clf = MLPClassifier(verbose=True, hidden_layer_sizes=300)
+            clf = MLPClassifier(verbose=True, hidden_layer_sizes=300, early_stopping=True)
             model = clf.fit(xs, ys)
             print("Training has ended")
             # Save MLP model
@@ -39,7 +39,7 @@ def neural_on_all_datasets():
             print("Start predicting validation set")
             y_pred = model.predict(validation.data)
             # Save Evaluation report
-            sdk.save_classification_report(validation, extraction_type, y_pred, algorithm, suffixe="_no_early_stop_balanced_data")
+            sdk.save_classification_report(validation, extraction_type, y_pred, algorithm, suffixe="_no_early_stop")
 
         except Exception as e:
             print(str(e))
@@ -49,17 +49,3 @@ def neural_on_all_datasets():
 
 # apply neural network algorithm on all datasets
 neural_on_all_datasets()
-
-
-
-# from collections import Counter
-# extraction_type = "MSD-JMIRMOMENTS"
-# folder = path + extraction_type + "/"
-# train, valid = sdk.load_dataset_from_folder(folder, extraction_type)
-# X = train.data
-# Y = train.target
-# xs, ys = sdk.balanced_subsample(X, Y)
-# c = Counter(ys)
-# print(c.keys())
-# print(c.values())
-# print(c)
