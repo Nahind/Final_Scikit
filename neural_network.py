@@ -51,17 +51,3 @@ def neural_on_all_datasets():
 
 # apply neural network algorithm on all datasets
 neural_on_all_datasets()
-
-
-
-# from collections import Counter
-# extraction_type = "MSD-JMIRMOMENTS"
-# folder = path + extraction_type + "/"
-# train, valid = sdk.load_dataset_from_folder(folder, extraction_type)
-# X = train.data
-# Y = train.target
-# xs, ys = sdk.balanced_subsample(X, Y)
-# c = Counter(ys)
-# print(c.keys())
-# print(c.values())
-# print(c)
