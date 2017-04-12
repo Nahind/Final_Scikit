@@ -4,6 +4,7 @@
 ###
 
 from scipy.io import arff
+from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals import joblib
 from sklearn.feature_selection import SelectFromModel
@@ -58,7 +59,7 @@ def select_best_features_with_trees(X, y, dataset_name, overwrite=False):
             return save_model.transform(X)
 
     # features selection
-    clf = RandomForestClassifier(n_estimators=50, n_jobs=-1)
+    clf = RandomForestClassifier(n_estimators=10, n_jobs=-1)
     clf.fit(X, y)
     model = SelectFromModel(clf, prefit=True)
     X_selected = model.transform(X)
@@ -68,28 +69,75 @@ def select_best_features_with_trees(X, y, dataset_name, overwrite=False):
 
     return X_selected
 
+def save_classification_report(y_valid, extraction_type, y_pred, algorithm, **kwargs):
+    file = sdk.get_or_create_output_file(extraction_type, algorithm, **kwargs)
+    print("Start computing information")
+    accuracy = metrics.accuracy_score(y_valid, y_pred)
+    file.write("Classifications correctes : " + accuracy.__str__() + "%\n")
+    file.write("Classifications incorrectes : " + (1 - accuracy).__str__() + "%\n")
+    file.writelines(metrics.classification_report(y_valid, y_pred))
+    file.close()
+    print("Classification report has been saved !")
 
-training, validation = load_dataset_from_folder(folder)
-X_train, y_train = training.data, training.target
-X_valid, y_valid = validation.data, validation.target
-X_train = select_best_features_with_trees(X_train, y_train, extraction_type, True)
-X_valid = select_best_features_with_trees(X_valid, y_valid, extraction_type, False)
+
+def merge_datasets_best_features(path, datasets):
+
+    X_train_merged = []
+    X_valid_merged = []
+
+    for dataset in datasets:
+        folder = path + dataset.upper() + "/"
+        training, validation = load_dataset_from_folder(folder)
+        X_train, y_train = training.data, training.target
+        X_valid, y_valid = validation.data, validation.target
+        X_train = select_best_features_with_trees(X_train, y_train, extraction_type, True)
+        X_valid = select_best_features_with_trees(X_valid, y_valid, extraction_type, False)
+        X_train_merged.append(X_train)
+        X_valid_merged.append(X_valid)
+        print("merged train shape = " + str(np.concatenate(X_train_merged, axis=1).shape))
+        print("merged valid shape = " + str(np.concatenate(X_valid_merged, axis=1).shape))
+
+    return np.concatenate(X_train_merged, axis=1), y_train, np.concatenate(X_valid_merged, axis=1), y_valid
 
 
-print("Starting new classification. Extraction method : " + extraction_type)
+merge_d = personal_settings.BEST_DATASETS
+X_train, y_train, X_valid, y_valid = merge_datasets_best_features(path, merge_d)
 
 try:
     clf = GaussianNB()
     model = clf.fit(X_train, y_train)
-    sdk.save_model(model, extraction_type + "_nb", "ml_framework")
     print("Start predicting validation set")
     y_pred = model.predict(X_valid)
     # Save Evaluation report
-    sdk.save_classification_report(validation, extraction_type, y_pred, algorithm,
-                                   suffixe="_nb")
+    save_classification_report(y_valid, "_".join(merge_d), y_pred, algorithm, suffixe="_nb_merged_jmfcc_ssd")
 
 except Exception as e:
     print(str(e))
     pass
 
-print("Ended extraction : " + extraction_type)
+
+
+# training, validation = load_dataset_from_folder(folder)
+# X_train, y_train = training.data, training.target
+# X_valid, y_valid = validation.data, validation.target
+# X_train = select_best_features_with_trees(X_train, y_train, extraction_type, True)
+# X_valid = select_best_features_with_trees(X_valid, y_valid, extraction_type, False)
+#
+#
+# print("Starting new classification. Extraction method : " + extraction_type)
+#
+# try:
+#     clf = GaussianNB()
+#     model = clf.fit(X_train, y_train)
+#     sdk.save_model(model, extraction_type + "_nb", "ml_framework")
+#     print("Start predicting validation set")
+#     y_pred = model.predict(X_valid)
+#     # Save Evaluation report
+#     sdk.save_classification_report(validation, extraction_type, y_pred, algorithm,
+#                                    suffixe="_nb")
+#
+# except Exception as e:
+#     print(str(e))
+#     pass
+#
+# print("Ended extraction : " + extraction_type)
