@@ -8,34 +8,25 @@ algorithm = os.path.basename(__file__).split(".py")[0]
 datasets = os.listdir(path)
 datasets = ["MSD-SSD"]
 
+
 #execute for all datasets:
 for extraction_type in datasets:
     print("Starting new classification. Extraction method : " + extraction_type)
     folder = path + extraction_type + "/"
-    for n in range(15,16):
-        print("Starting new classification. Extraction method : " + extraction_type)
-        print("NN = " + str(n))
 
-        try:
-            clf = neighbors.KNeighborsClassifier(n_neighbors = n, n_jobs = -1)
-            sdk.evaluate_classifier(clf, folder, extraction_type, algorithm, suffixe="_"+str(n)+"NN")
+    for weights in ['distance']:
+        
+        for n_neighbors in [3,5,6,7]:
 
-        except Exception as e:
-            print(str(e))
-            pass
-    print("Ended extraction : " + extraction_type)
+            print("Starting new classification. Extraction method : " + extraction_type)
+            print("weights = " + weights)
+            
+            try:
+                clf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, n_jobs=-1, weights=weights)
+                sdk.evaluate_classifier(clf, folder, extraction_type, algorithm, suffixe="_"+str(n_neighbors)+"NN_" + weights)
 
+            except Exception as e:
+                print(str(e))
+                pass
 
-# execute for testing and evaluating the best parameters
-# test_extraction_type = "MSD-JMIRMFCCS"
-# algorithm = "knn_test"
-# test_folder = path + test_extraction_type + "/"
-#
-# for n in range(12, 21):
-#     print("Starting new classification. Extraction method : " + test_extraction_type)
-#     print("NN = " + str(n))
-#
-#     clf = neighbors.KNeighborsClassifier(n_neighbors=n)
-#     sdk.evaluate_classifier(clf, test_folder, test_extraction_type, algorithm, suffixe=str(n)+"NN")
-#
-#     print("Ended extraction : " + test_extraction_type)
+            print("Ended extraction : " + extraction_type)

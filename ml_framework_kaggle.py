@@ -44,30 +44,6 @@ def load_dataset_from_folder(folder):
     return training, validation
 
 
-def select_best_features_with_trees(X, y, dataset_name, overwrite=False):
-    dataset_name = dataset_name.lower()
-    directory = "./output_features_selection"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-        print("directory created : " + directory)
-
-    # if the selection exists, we return it
-    for f_name in os.listdir(directory):
-        if f_name.startswith(dataset_name) and overwrite is False:
-            print("Data has been saved before. We are retrieving it from file")
-            save_model = joblib.load(directory + "/" + dataset_name + '.pkl')
-            return save_model.transform(X)
-
-    # features selection
-    clf = RandomForestClassifier(n_estimators=10, n_jobs=-1)
-    clf.fit(X, y)
-    model = SelectFromModel(clf, prefit=True)
-    X_selected = model.transform(X)
-    print("Saving data for future use in : " + directory)
-    joblib.dump(model, directory + "/" + dataset_name + '.pkl')
-    print("We went from : " + str(X.shape[1]) + " features to " + str(X_selected.shape[1]))
-
-    return X_selected
 
 def save_classification_report(y_valid, extraction_type, y_pred, algorithm, **kwargs):
     file = sdk.get_or_create_output_file(extraction_type, algorithm, **kwargs)
@@ -80,18 +56,47 @@ def save_classification_report(y_valid, extraction_type, y_pred, algorithm, **kw
     print("Classification report has been saved !")
 
 
+
+def select_best_features_with_trees(X, y, dataset_name, overwrite=False):
+    dataset_name = dataset_name.lower()
+    directory = "./output_features_selection"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        print("directory created : " + directory)
+
+    # if the selection exists, we return it
+    for f_name in os.listdir(directory):
+        if f_name.startswith(dataset_name) and overwrite is False:
+            print("Data has been saved before. We are retrieving it from file : " + dataset_name)
+            save_model = joblib.load(directory + "/" + dataset_name + '.pkl')
+            return save_model.transform(X)
+
+    # features selection
+    clf = RandomForestClassifier(n_estimators=100, n_jobs=-1)
+    clf.fit(X, y)
+    model = SelectFromModel(clf, prefit=True)
+    X_selected = model.transform(X)
+    print("Saving data for future use in : " + directory)
+    joblib.dump(model, directory + "/" + dataset_name + '.pkl')
+    print("We went from : " + str(X.shape[1]) + " features to " + str(X_selected.shape[1]))
+
+    return X_selected
+
+
+
 def merge_datasets_best_features(path, datasets):
 
     X_train_merged = []
     X_valid_merged = []
 
     for dataset in datasets:
+        print("dealing with : " + dataset)
         folder = path + dataset.upper() + "/"
         training, validation = load_dataset_from_folder(folder)
         X_train, y_train = training.data, training.target
         X_valid, y_valid = validation.data, validation.target
-        X_train = select_best_features_with_trees(X_train, y_train, extraction_type, True)
-        X_valid = select_best_features_with_trees(X_valid, y_valid, extraction_type, False)
+        X_train = select_best_features_with_trees(X_train, y_train, dataset)
+        X_valid = select_best_features_with_trees(X_valid, y_valid, dataset)
         X_train_merged.append(X_train)
         X_valid_merged.append(X_valid)
         print("merged train shape = " + str(np.concatenate(X_train_merged, axis=1).shape))
@@ -100,16 +105,30 @@ def merge_datasets_best_features(path, datasets):
     return np.concatenate(X_train_merged, axis=1), y_train, np.concatenate(X_valid_merged, axis=1), y_valid
 
 
+
+###
+# Testing script
+###
+
+from sklearn import neighbors
+from sklearn.neural_network import MLPClassifier
+
 merge_d = personal_settings.BEST_DATASETS
+# merge_d = [merge_d[0], merge_d[2]]
 X_train, y_train, X_valid, y_valid = merge_datasets_best_features(path, merge_d)
 
 try:
     clf = GaussianNB()
+    hidden_layer_size = 200
+    n_trees = 600
+    clf = MLPClassifier(verbose=True, hidden_layer_sizes=hidden_layer_size, early_stopping=False)
+    clf = neighbors.KNeighborsClassifier(n_neighbors=15, n_jobs=-1, weights='distance')
+    clf = RandomForestClassifier(n_estimators=n_trees, n_jobs=-1, verbose=20)
     model = clf.fit(X_train, y_train)
     print("Start predicting validation set")
     y_pred = model.predict(X_valid)
     # Save Evaluation report
-    save_classification_report(y_valid, "_".join(merge_d), y_pred, algorithm, suffixe="_nb_merged_jmfcc_ssd")
+    save_classification_report(y_valid, "_".join(merge_d), y_pred, algorithm, suffixe="_rd_"+str(n_trees))
 
 except Exception as e:
     print(str(e))

@@ -6,7 +6,7 @@ import personal_settings
 
 path = personal_settings.PATH
 algorithm = os.path.basename(__file__).split(".py")[0]
-datasets = personal_settings.LARGE_DATASETS
+datasets = personal_settings.BEST_DATASETS
 
 
 #execute for all datasets:
@@ -27,10 +27,12 @@ def neural_on_all_datasets():
             validation.data = scaler.transform(validation.data)
             print("Validation data has been normalized")
             # Normalize data
+            print("Start balancing training data")
             xs, ys = sdk.balanced_subsample(training.data, training.target)
             # Build MLP model
             print("Start training MLP Classifier")
-            clf = MLPClassifier(verbose=True, hidden_layer_sizes=300, early_stopping=True)
+            hidden_layer_size = 200
+            clf = MLPClassifier(verbose=True, hidden_layer_sizes=hidden_layer_size)
             model = clf.fit(xs, ys)
             print("Training has ended")
             # Save MLP model
@@ -39,7 +41,7 @@ def neural_on_all_datasets():
             print("Start predicting validation set")
             y_pred = model.predict(validation.data)
             # Save Evaluation report
-            sdk.save_classification_report(validation, extraction_type, y_pred, algorithm, suffixe="_no_early_stop")
+            sdk.save_classification_report(validation, extraction_type, y_pred, algorithm, suffixe="__real_no_early_stop_balanced_data_hidden_"+str(hidden_layer_size)+"_layers")
 
         except Exception as e:
             print(str(e))
