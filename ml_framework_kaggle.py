@@ -112,23 +112,37 @@ def merge_datasets_best_features(path, datasets):
 
 from sklearn import neighbors
 from sklearn.neural_network import MLPClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import GradientBoostingClassifier
 
 merge_d = personal_settings.BEST_DATASETS
 # merge_d = [merge_d[0], merge_d[2]]
-X_train, y_train, X_valid, y_valid = merge_datasets_best_features(path, merge_d)
+# X_train, y_train, X_valid, y_valid = merge_datasets_best_features(path, merge_d)
 
 try:
     clf = GaussianNB()
     hidden_layer_size = 200
-    n_trees = 600
-    clf = MLPClassifier(verbose=True, hidden_layer_sizes=hidden_layer_size, early_stopping=False)
-    clf = neighbors.KNeighborsClassifier(n_neighbors=15, n_jobs=-1, weights='distance')
-    clf = RandomForestClassifier(n_estimators=n_trees, n_jobs=-1, verbose=20)
-    model = clf.fit(X_train, y_train)
+    n_trees = 550
+    clf_mlp = MLPClassifier(verbose=True, hidden_layer_sizes=hidden_layer_size, early_stopping=False)
+    clf_knn = neighbors.KNeighborsClassifier(n_neighbors=15, n_jobs=-1, weights='distance')
+    clf_rd = RandomForestClassifier(n_estimators=n_trees, n_jobs=5, verbose=20)
+    clf_gd = GradientBoostingClassifier(verbose=20, n_estimators=400)
+    # model = clf_rd.fit(X_train, y_train)
+    # print("Start predicting validation set")
+    # y_pred = model.predict(X_valid)
+    # # Save Evaluation report
+    # save_classification_report(y_valid, "_".join(merge_d), y_pred, algorithm, suffixe="_gd_400")
+    # y_pred = None
+    # model = None
+
+    #model = clf_rd.fit(X_train, y_train)
+    #sdk.save_model(model,  "_".join(merge_d) + "_rd_550", algorithm)
     print("Start predicting validation set")
+    model = sdk.load_model("_".join(merge_d) + "_rd_550", algorithm)
+    print("Model loaded")
     y_pred = model.predict(X_valid)
     # Save Evaluation report
-    save_classification_report(y_valid, "_".join(merge_d), y_pred, algorithm, suffixe="_rd_"+str(n_trees))
+    save_classification_report(y_valid, "_".join(merge_d), y_pred, algorithm, suffixe="_rd_550")
 
 except Exception as e:
     print(str(e))
