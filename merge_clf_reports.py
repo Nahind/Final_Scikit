@@ -2,7 +2,7 @@ import os
 import personal_settings
 from functools import reduce
 
-root_path = "/home/nandane/Documents/Cours_ETS_MTL/LOG770_Intelligence_machine/LAB4/Processing_output"
+root_path = "/home/nandane/Documents/Cours_ETS_MTL/LOG770_Intelligence_machine/LAB4/Processing_output_2"
 
 
 def write_summary(path, files):
@@ -43,6 +43,7 @@ def combine_summary_files():
 
             algorithm = d.split("/")[d.split("/").__len__() - 2].split("output_")[1]
             print("ALGO = " + algorithm)
+            print(d)
 
             for file in files:
                 if file.startswith("summary"):
